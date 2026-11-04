@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberShield PhishGuard | AI Phishing URL Detection</title>
+  <meta name="description" content="Advanced AI-powered URL phishing detector using Machine Learning, lexical analysis, and explainable threat scoring.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="theme-dark">
+  <div class="app-layout">
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>CyberShield <span class="accent-text">PhishGuard</span></h1>
+            <span class="brand-tagline">AI-Powered URL Phishing & Threat Analyzer</span>
+          </div>
+        </div>
+
+        <nav class="nav-links">
+          <button id="navSingleScan" class="nav-btn active" data-view="single">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Single URL Scan
+          </button>
+          <button id="navBatchScan" class="nav-btn" data-view="batch">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Batch Scanner
+          </button>
+          <button id="navModelInfo" class="nav-btn" data-modal="modelModal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+              <line x1="6" y1="6" x2="6.01" y2="6"/>
+              <line x1="6" y1="18" x2="6.01" y2="18"/>
+            </svg>
+            ML Insights
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="content-wrapper">
+
+        <!-- SINGLE SCAN VIEW -->
+        <section id="viewSingle" class="view-section active">
+          <!-- Hero Search Box -->
+          <div class="search-hero card-glass">
+            <div class="hero-badge">
+              <span class="pulse-dot"></span>
+              Real-Time Heuristic + Machine Learning Analysis
+            </div>
+            <h2 class="hero-title">Verify Any Website URL Before You Click</h2>
+            <p class="hero-desc">Inspect domain entropy, spoofed brand tokens, credential obfuscations, and machine-learned anomaly indicators.</p>
+
+            <form id="urlForm" class="url-input-form" novalidate>
+              <div class="input-group">
+                <div class="input-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  id="urlInput"
+                  name="url"
+                  placeholder="Enter or paste a website URL (e.g., https://example.com/login)..."
+                  autocomplete="off"
+                  spellcheck="false"
+                  required
+                >
+                <button type="button" id="clearBtn" class="clear-btn" title="Clear input" style="display: none;">
+                  &times;
+                </button>
+                <button type="submit" id="analyzeBtn" class="analyze-btn">
+                  <span class="btn-text">Analyze URL</span>
+                  <span class="btn-spinner" style="display: none;"></span>
+                </button>
+              </div>
+            </form>
+
+            <!-- Sample Test URLs -->
+            <div class="samples-wrapper">
+              <span class="samples-label">Quick Test Presets:</span>
+              <div class="samples-list">
+                <button type="button" class="sample-chip legit" data-url="https://www.google.com">
+                  <span class="chip-status"></span> Google (Safe)
+                </button>
+                <button type="button" class="sample-chip legit" data-url="https://github.com/torvalds/linux/blob/master/README.md">
+                  <span class="chip-status"></span> GitHub (Safe)
+                </button>
+                <button type="button" class="sample-chip phish" data-url="http://192.168.1.100/paypal/login.php?cmd=verify">
+                  <span class="chip-status"></span> IP Address Host
+                </button>
+                <button type="button" class="sample-chip phish" data-url="http://paypal.com.account-update.xyz/signin">
+                  <span class="chip-status"></span> Brand Spoofing
+                </button>
+                <button type="button" class="sample-chip phish" data-url="http://www.apple.com@phishing-target.com/security/login.html">
+                  <span class="chip-status"></span> @ Userinfo Redirect
+                </button>
+                <button type="button" class="sample-chip phish" data-url="http://xn--gogle-qra.com/verify-account">
+                  <span class="chip-status"></span> Punycode Homograph
+                </button>
+                <button type="button" class="sample-chip warn" data-url="http://bit.ly/3xY8a9b">
+                  <span class="chip-status"></span> URL Shortener
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alert / Error Banner -->
+          <div id="errorAlert" class="alert-box alert-error" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span id="errorMessage">An error occurred</span>
+          </div>
+
+          <!-- ANALYSIS RESULTS CONTAINER -->
+          <div id="resultsContainer" class="results-container" style="display: none;">
+            
+            <!-- Assessment Score Card -->
+            <div class="assessment-card card-glass">
+              <div class="assessment-main">
+                <!-- Circular SVG Gauge -->
+                <div class="gauge-wrapper">
+                  <svg class="gauge-svg" viewBox="0 0 200 200">
+                    <circle class="gauge-bg" cx="100" cy="100" r="82" stroke-width="16" />
+                    <circle id="gaugeProgress" class="gauge-progress" cx="100" cy="100" r="82" stroke-width="16" />
+                  </svg>
+                  <div class="gauge-content">
+                    <span id="gaugeValue" class="gauge-number">0</span>
+                    <span class="gauge-unit">%</span>
+                    <span class="gauge-label">RISK SCORE</span>
+                  </div>
+                </div>
+
+                <!-- Verdict Summary -->
+                <div class="assessment-summary">
+                  <div class="verdict-row">
+                    <span id="verdictBadge" class="verdict-badge badge-safe">Legitimate</span>
+                    <span id="riskLevelText" class="risk-level-tag">Low Risk Profile</span>
+                  </div>
+                  <h3 id="verdictHeading" class="verdict-heading">URL appears safe and authentic</h3>
+                  <div class="analyzed-url-box">
+                    <span class="url-label">Analyzed URL:</span>
+                    <code id="analyzedUrl" class="analyzed-url-text">https://example.com</code>
+                    <button id="copyUrlBtn" class="copy-btn" title="Copy URL">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                      </svg>
+                    </button>
+                    <button id="downloadReportBtn" class="copy-btn" title="Save / Download JSON Report">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Metrics Strip -->
+              <div class="metrics-strip">
+                <div class="metric-item">
+                  <span class="metric-label">ML Model Phish Probability</span>
+                  <span id="metricMlProb" class="metric-val">0.0%</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Rule Threat Points</span>
+                  <span id="metricHeuristic" class="metric-val">0 / 100</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Threats Detected</span>
+                  <span id="metricThreatCount" class="metric-val">0</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Trust Signals</span>
+                  <span id="metricTrustCount" class="metric-val">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabbed Details Section -->
+            <div class="details-panel card-glass">
+              <div class="tabs-header">
+                <button class="tab-btn active" data-tab="tabThreats">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  Threats & Explanations
+                </button>
+                <button class="tab-btn" data-tab="tabAnatomy">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="9" x2="20" y2="9"/>
+                    <line x1="4" y1="15" x2="20" y2="15"/>
+                    <line x1="10" y1="3" x2="8" y2="21"/>
+                    <line x1="16" y1="3" x2="14" y2="21"/>
+                  </svg>
+                  URL Anatomy
+                </button>
+                <button class="tab-btn" data-tab="tabFeatures">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                  </svg>
+                  ML Features (35)
+                </button>
+                <button class="tab-btn" data-tab="tabAdvice">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                  Recommendations
+                </button>
+              </div>
+
+              <!-- Tab 1: Threats & Explanations -->
+              <div id="tabThreats" class="tab-content active">
+                <div class="threats-grid">
+                  <div class="threat-section">
+                    <h4 class="section-title">
+                      <span class="badge-count badge-danger" id="threatBadgeCount">0</span>
+                      Suspicious Patterns & Threat Indicators
+                    </h4>
+                    <div id="threatList" class="threat-list">
+                      <!-- Rendered by JS -->
+                    </div>
+                  </div>
+
+                  <div class="trust-section">
+                    <h4 class="section-title">
+                      <span class="badge-count badge-safe" id="trustBadgeCount">0</span>
+                      Positive Trust Signals
+                    </h4>
+                    <div id="trustList" class="trust-list">
+                      <!-- Rendered by JS -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 2: URL Anatomy -->
+              <div id="tabAnatomy" class="tab-content">
+                <p class="tab-desc">Structural breakdown of the URL components extracted for lexical inspection:</p>
+                <div class="anatomy-grid" id="anatomyGrid">
+                  <!-- Rendered by JS -->
+                </div>
+              </div>
+
+              <!-- Tab 3: ML Features -->
+              <div id="tabFeatures" class="tab-content">
+                <div class="features-header">
+                  <p class="tab-desc">Statistical, structural, and behavioral features passed to the Machine Learning model:</p>
+                  <input type="text" id="featureFilter" class="filter-input" placeholder="Search features...">
+                </div>
+                <div class="features-table-wrapper">
+                  <table class="features-table">
+                    <thead>
+                      <tr>
+                        <th>Feature Name</th>
+                        <th>Type</th>
+                        <th>Extracted Value</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody id="featuresTableBody">
+                      <!-- Rendered by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tab 4: Recommendations -->
+              <div id="tabAdvice" class="tab-content">
+                <h4 class="section-title">Actionable Security Recommendations</h4>
+                <div id="recommendationsList" class="recommendations-list">
+                  <!-- Rendered by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Scan History -->
+            <div class="history-card card-glass">
+              <div class="history-header">
+                <h4 class="history-title">Recent Session Scans</h4>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button id="exportHistoryBtn" class="btn-subtle">Export History (JSON)</button>
+                  <button id="clearHistoryBtn" class="btn-subtle">Clear History</button>
+                </div>
+              </div>
+              <div class="history-table-wrapper">
+                <table class="history-table">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>URL</th>
+                      <th>Verdict</th>
+                      <th>Risk Score</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyTableBody">
+                    <tr class="empty-row"><td colspan="5">No scans recorded yet in this session.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BATCH SCAN VIEW -->
+        <section id="viewBatch" class="view-section">
+          <div class="batch-card card-glass">
+            <h2 class="hero-title">Batch URL Scanner</h2>
+            <p class="hero-desc">Paste multiple URLs (one per line, up to 50) to evaluate bulk links simultaneously.</p>
+            
+            <form id="batchForm">
+              <textarea id="batchInput" class="batch-textarea" rows="8" placeholder="https://example.com&#10;http://192.168.1.1/login.php&#10;http://verify-account.top/signin"></textarea>
+              <div class="batch-actions">
+                <button type="submit" id="batchSubmitBtn" class="analyze-btn">
+                  <span class="btn-text">Run Batch Analysis</span>
+                  <span class="btn-spinner" style="display: none;"></span>
+                </button>
+                <button type="button" id="loadSampleBatchBtn" class="btn-subtle">Load Sample Batch</button>
+              </div>
+            </form>
+
+            <div id="batchResultsContainer" style="display: none; margin-top: 1.5rem;">
+              <h3 class="section-title">Batch Results (<span id="batchCount">0</span> URLs)</h3>
+              <div class="history-table-wrapper">
+                <table class="history-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>URL</th>
+                      <th>Risk Score</th>
+                      <th>Verdict</th>
+                      <th>Threats</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="batchTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- ML Insights Modal -->
+    <div id="modelModal" class="modal-overlay">
+      <div class="modal-dialog card-glass">
+        <div class="modal-header">
+          <h3 class="modal-title">Machine Learning Model Architecture</h3>
+          <button class="modal-close" data-close="modelModal">&times;</button>
+        </div>
+        <div class="modal-body" id="modelModalBody">
+          <div class="modal-loader">Loading model telemetry...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <span>CyberShield PhishGuard &copy; 2026. Built with Python, Flask & Machine Learning.</span>
+        <span class="footer-status"><span class="status-indicator"></span> ML Classifier Active</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

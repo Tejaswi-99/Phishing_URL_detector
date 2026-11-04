@@ -1,0 +1,60 @@
+{
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "roc_auc": 1.0,
+  "confusion_matrix": [
+    [
+      300,
+      0
+    ],
+    [
+      0,
+      300
+    ]
+  ],
+  "sample_count": 3000,
+  "top_features": [
+    {
+      "feature": "num_hyphens_hostname",
+      "importance": 0.1806
+    },
+    {
+      "feature": "keyword_count",
+      "importance": 0.1453
+    },
+    {
+      "feature": "domain_entropy",
+      "importance": 0.1275
+    },
+    {
+      "feature": "is_suspicious_tld",
+      "importance": 0.1151
+    },
+    {
+      "feature": "hostname_length",
+      "importance": 0.0558
+    },
+    {
+      "feature": "num_hyphens",
+      "importance": 0.0505
+    },
+    {
+      "feature": "num_subdomains",
+      "importance": 0.0435
+    },
+    {
+      "feature": "is_https",
+      "importance": 0.0414
+    },
+    {
+      "feature": "digit_ratio_hostname",
+      "importance": 0.0366
+    },
+    {
+      "feature": "num_dots_hostname",
+      "importance": 0.0355
+    }
+  ]
+}
